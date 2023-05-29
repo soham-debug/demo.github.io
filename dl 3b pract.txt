@@ -1,0 +1,44 @@
+import numpy as np
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import keras
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
+
+print("No. images in training set {}".format(x_train.shape))
+print("No. labels in training set {}".format(y_train.shape))
+print("No. images in test set {}".format(x_test.shape))
+print("No. labels in test set {}".format(y_train.shape))
+
+
+img = x_train[0].reshape(28,28)
+plt.imshow(img1, cmap='Greys')
+
+x_train, x_test = tf.cast(x_train/255.0, tf.float32), tf.cast(x_test/255.0, tf.float32)
+
+model = tf.keras.models.Sequential()
+
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(256, activation="relu"))
+model.add(tf.keras.layers.Dense(128, activation="relu"))
+model.add(tf.keras.layers.Dense(10, activation="softmax"))
+model.build(input_shape=[None, 28, 28])
+model.summary()
+
+model.compile(optimizer='sgd', loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+
+model.fit(x_train, y_train, batch_size=32, epochs=10)
+
+model.evaluate(x_test, y_test)
+
+probability_model = tf.keras.Sequential([model,  tf.keras.layers.Softmax()])
+predictions = probability_model.predict(x_test)
+
+class_names = ['T_shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+y_predict = class_names[np.argmax(predictions[3])]
+y_predict
+
+y_actual = class_names[y_test[3]]
+y_actual
+
+img = x_test[3]
+plt.imshow(img, cmap='Greys')
